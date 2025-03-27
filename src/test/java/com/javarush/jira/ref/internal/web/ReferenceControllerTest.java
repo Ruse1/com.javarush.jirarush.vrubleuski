@@ -76,7 +76,7 @@ public class ReferenceControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL + RefType.TASK + "/" + TASK_CODE)
-                .param("title", "Task1")
+                .param("email.title", "Task1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNoContent());

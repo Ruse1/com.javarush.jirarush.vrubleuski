@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
@@ -22,6 +24,7 @@ import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapt
 import org.springframework.web.servlet.mvc.UrlFilenameViewController;
 
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Properties;
 
 //@EnableWebMvc : http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc-auto-configuration
@@ -94,5 +97,19 @@ public class MvcConfig implements WebMvcConfigurer {
                 .setConnectTimeout(Duration.ofSeconds(10))
                 .setReadTimeout(Duration.ofSeconds(10))
                 .build();
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames(
+                "classpath:/messages/mail/email-confirmation",
+                "classpath:/messages/mail/password-reset",
+                "classpath:/messages/view/index");
+        messageSource.setDefaultLocale(new Locale("ru"));
+        messageSource.setCacheSeconds(3600);
+        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setAlwaysUseMessageFormat(true);
+        return messageSource;
     }
 }
