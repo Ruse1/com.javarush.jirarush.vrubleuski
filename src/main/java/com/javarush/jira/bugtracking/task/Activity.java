@@ -67,11 +67,19 @@ public class Activity extends BaseEntity implements HasAuthorId {
     @Nullable
     @Column(name = "description")
     private String description;
-
     @Positive
     @Nullable
     @Column(name = "estimate")
     private Integer estimate;
+    @Column(name = "in_progress")
+    @Nullable
+    private LocalDateTime inProgress;
+    @Column(name = "ready_for_review")
+    @Nullable
+    private LocalDateTime readyForReview;
+    @Column(name = "done")
+    @Nullable
+    private LocalDateTime done;
 
     Activity(Long id, Long taskId, Long authorId) {
         super(id);
@@ -92,5 +100,23 @@ public class Activity extends BaseEntity implements HasAuthorId {
         this.title = title;
         this.description = description;
         this.estimate = estimate;
+    }
+
+    Activity(Long id, Long taskId, Long authorId, LocalDateTime updated, String comment, String statusCode, String priorityCode,
+             String typeCode, String title, String description, Integer estimate, LocalDateTime inProgress, LocalDateTime readyForReview, LocalDateTime done) {
+        super(id);
+        this.taskId = taskId;
+        this.authorId = authorId;
+        this.updated = updated;
+        this.comment = comment;
+        this.statusCode = statusCode;
+        this.priorityCode = priorityCode;
+        this.typeCode = typeCode;
+        this.title = title;
+        this.description = description;
+        this.estimate = estimate;
+        this.inProgress = inProgress;
+        this.readyForReview = readyForReview;
+        this.done = done;
     }
 }

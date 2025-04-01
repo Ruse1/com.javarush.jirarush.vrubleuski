@@ -22,7 +22,7 @@ public interface TaskRepository extends BaseRepository<Task> {
     @Query("SELECT t FROM Task t JOIN FETCH t.project LEFT JOIN FETCH t.sprint LEFT JOIN FETCH t.parent WHERE t.id =:id")
     Optional<Task> findFullById(long id);
 
-    @Query("SELECT t FROM Task t JOIN FETCH t.tags WHERE t.id = :id")
+    @Query("SELECT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.id = :id")
     Optional<Task> findWithTagsById(long id);
 
     @Modifying

@@ -19,8 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.javarush.jira.bugtracking.ObjectType.TASK;
@@ -141,6 +144,30 @@ public class TaskService {
                 .orElseThrow(() -> new NotFoundException(String
                         .format("Not found assignment with userType=%s for task {%d} for user {%d}", userType, id, userId)));
         assignment.setEndpoint(LocalDateTime.now());
+    }
+
+    public long amountHoursInWorking(long id) {
+        long hours = 0L;
+        List<Activity> activities = activityHandler.getRepository().findAllByTaskIdOrderByUpdatedDesc(id);
+        if (!activities.isEmpty()) {
+            Activity lastActivity = activities.get(0);
+            LocalDateTime readyForReview = lastActivity.getReadyForReview();
+            LocalDateTime inProgress = lastActivity.getInProgress();
+            hours = ChronoUnit.HOURS.between(inProgress, readyForReview);
+        }
+        return hours;
+    }
+
+    public long amountHoursInTesting(long id) {
+        long hours = 0L;
+        List<Activity> activities = activityHandler.getRepository().findAllByTaskIdOrderByUpdatedDesc(id);
+        if (!activities.isEmpty()) {
+            Activity lastActivity = activities.get(0);
+            LocalDateTime done = lastActivity.getDone();
+            LocalDateTime readyForReview = lastActivity.getReadyForReview();
+            hours = ChronoUnit.HOURS.between(readyForReview, done);
+        }
+        return hours;
     }
 
     private void checkAssignmentActionPossible(long id, String userType, boolean assign) {
