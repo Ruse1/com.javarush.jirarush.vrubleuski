@@ -146,30 +146,6 @@ public class TaskService {
         assignment.setEndpoint(LocalDateTime.now());
     }
 
-    public long amountHoursInWorking(long id) {
-        long hours = 0L;
-        List<Activity> activities = activityHandler.getRepository().findAllByTaskIdOrderByUpdatedDesc(id);
-        if (!activities.isEmpty()) {
-            Activity lastActivity = activities.get(0);
-            LocalDateTime readyForReview = lastActivity.getReadyForReview();
-            LocalDateTime inProgress = lastActivity.getInProgress();
-            hours = ChronoUnit.HOURS.between(inProgress, readyForReview);
-        }
-        return hours;
-    }
-
-    public long amountHoursInTesting(long id) {
-        long hours = 0L;
-        List<Activity> activities = activityHandler.getRepository().findAllByTaskIdOrderByUpdatedDesc(id);
-        if (!activities.isEmpty()) {
-            Activity lastActivity = activities.get(0);
-            LocalDateTime done = lastActivity.getDone();
-            LocalDateTime readyForReview = lastActivity.getReadyForReview();
-            hours = ChronoUnit.HOURS.between(readyForReview, done);
-        }
-        return hours;
-    }
-
     private void checkAssignmentActionPossible(long id, String userType, boolean assign) {
         Assert.notNull(userType, "userType must not be null");
         Task task = handler.getRepository().getExisted(id);

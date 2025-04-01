@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static com.javarush.jira.bugtracking.task.TaskUtil.getLatestValue;
@@ -51,6 +53,30 @@ public class ActivityService {
         checkBelong(activity);
         handler.delete(activity.id());
         updateTaskIfRequired(activity.getTaskId(), activity.getStatusCode(), activity.getTypeCode());
+    }
+
+    public long amountHoursInWorking(long taskId) {
+        long hours = 0L;
+        List<Activity> activities = handler.getRepository().findAllByTaskIdOrderByUpdatedDesc(taskId);
+        if (!activities.isEmpty()) {
+            Activity lastActivity = activities.get(0);
+            LocalDateTime readyForReview = lastActivity.getReadyForReview();
+            LocalDateTime inProgress = lastActivity.getInProgress();
+            hours = ChronoUnit.HOURS.between(inProgress, readyForReview);
+        }
+        return hours;
+    }
+
+    public long amountHoursInTesting(long taskId) {
+        long hours = 0L;
+        List<Activity> activities = handler.getRepository().findAllByTaskIdOrderByUpdatedDesc(taskId);
+        if (!activities.isEmpty()) {
+            Activity lastActivity = activities.get(0);
+            LocalDateTime done = lastActivity.getDone();
+            LocalDateTime readyForReview = lastActivity.getReadyForReview();
+            hours = ChronoUnit.HOURS.between(readyForReview, done);
+        }
+        return hours;
     }
 
     private void updateTaskIfRequired(long taskId, String activityStatus, String activityType) {
